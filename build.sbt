@@ -1,9 +1,11 @@
 lazy val akkaHttpVersion = "10.1.4"
 lazy val akkaVersion    = "2.5.15"
 
+
 lazy val root = (project in file(".")).
+  enablePlugins(JavaServerAppPackaging, DockerPlugin).
   settings(
-    inThisBuild(List(
+      inThisBuild(List(
       organization    := "com.thor",
       scalaVersion    := "2.12.6"
     )),
@@ -18,5 +20,8 @@ lazy val root = (project in file(".")).
       "com.typesafe.akka" %% "akka-testkit"         % akkaVersion     % Test,
       "com.typesafe.akka" %% "akka-stream-testkit"  % akkaVersion     % Test,
       "org.scalatest"     %% "scalatest"            % "3.0.5"         % Test
-    )
+    ),
+    dockerBaseImage := "openjdk:8",
+    dockerUsername := Some("softwaremill")
   )
+
