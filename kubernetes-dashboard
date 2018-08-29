@@ -1,0 +1,4 @@
+#!/usr/bin/env fish
+
+echo "open http://localhost:8001"
+kubectl proxy --port 8001

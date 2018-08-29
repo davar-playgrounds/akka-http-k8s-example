@@ -1,0 +1,4 @@
+#!/usr/bin/env fish
+echo "try http://localhost:8080/users and http://localhost:8558/cluster/members"
+kubectl port-forward service/akka-simple-cluster 8080:8080 8558:8558
+
