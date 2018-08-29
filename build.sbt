@@ -6,11 +6,16 @@ lazy val root = (project in file(".")).
   enablePlugins(JavaServerAppPackaging, DockerPlugin).
   settings(
       inThisBuild(List(
-      organization    := "com.thor",
-      scalaVersion    := "2.12.6"
+      organization    := "thor",
+      scalaVersion    := "2.12.6",
+      version         := "0.0.1-SNAPSHOT"
     )),
     name := "akka-http-k8s-example",
     libraryDependencies ++= Seq(
+      "com.typesafe.akka" %% "akka-cluster"           % akkaVersion,
+      "com.typesafe.akka" %% "akka-cluster-sharding"  % akkaVersion,
+
+
       "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
       "com.typesafe.akka" %% "akka-http-xml"        % akkaHttpVersion,
@@ -22,6 +27,6 @@ lazy val root = (project in file(".")).
       "org.scalatest"     %% "scalatest"            % "3.0.5"         % Test
     ),
     dockerBaseImage := "openjdk:8",
-    dockerUsername := Some("softwaremill")
+    dockerUsername := Some("thor")
   )
 
