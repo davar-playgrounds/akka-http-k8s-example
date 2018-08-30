@@ -1,3 +1,5 @@
+import scala.sys.process._
+
 lazy val akkaHttpVersion = "10.1.4"
 lazy val akkaVersion    = "2.5.15"
 lazy val akkaManagementVersion = "0.13.1"
@@ -32,6 +34,46 @@ lazy val root = (project in file(".")).
       "org.scalatest"     %% "scalatest"            % "3.0.5"         % Test
     ),
     dockerBaseImage := "openjdk:8",
-    dockerUsername := Some("thor")
+    dockerUsername := Some("thor"),
+
+    certLocation  := s"${target.value}/generatedCert",
+    certSubject   := "akka-nginx"
+)
+
+//
+// Certificate Generation
+//
+
+val certSubject         = settingKey[String]("subject to use in generated cert")
+val certLocation        = settingKey[String]("Where to place the generated file")
+
+resourceGenerators in Compile += Def.task {
+  generateCertificate(
+    file((certLocation in Compile).value),
+    (certSubject in Compile).value
   )
+}.taskValue
+
+def generateCertificate(location: File, subject: String): Seq[File] = {
+  val keyFile = file(s"$location.key")
+  val certFile = file(s"$location.crt")
+
+  if (keyFile.exists() && certFile.exists()) {
+    println(s"certs present at in $location")
+    Seq(location)
+  } else {
+    println(s"generating certs in $location")
+    val cmd = Seq(
+      "openssl",
+      "req", "-x509",
+      "-nodes",
+      "-days", "365",
+      "-newkey", "rsa:2048",
+      "-keyout", keyFile.absolutePath,
+      "-out", certFile.absolutePath,
+      "-subj", s"/CN=$subject/O=$subject")
+    println(cmd !!)
+    Seq(keyFile, certFile)
+  }
+}
 
