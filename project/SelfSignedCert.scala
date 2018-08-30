@@ -3,20 +3,25 @@ import sbt.Keys._
 import sbt._
 import sbt.{Def, File, file, settingKey}
 
-//
-// Certificate Generation
-//
+object SelfSignedCert extends AutoPlugin {
 
-object Certificate {
-  val certSubject = settingKey[String]("subject to use in generated cert")
-  val certLocation = settingKey[String]("Where to place the generated file")
+  object autoImport {
+    val certSubject = settingKey[String]("subject to use in generated cert")
+    val certLocation = settingKey[String]("Where to place the generated file")
+    //val generateCertificate = taskKey[Seq[File]]("Generates cert")
+  }
 
-  resourceGenerators in Compile += Def.task {
-    generateCertificate(
-      file((certLocation in Compile).value),
-      (certSubject in Compile).value
-    )
-  }.taskValue
+  import autoImport._
+
+  override def projectSettings = Seq(
+
+    resourceGenerators in Compile += Def.task {
+      generateCertificate(
+        file((certLocation in Compile).value),
+        (certSubject in Compile).value
+      )
+    }.taskValue
+  )
 
   def generateCertificate(location: File, subject: String): Seq[File] = {
     val keyFile = file(s"$location.key")
@@ -36,7 +41,7 @@ object Certificate {
         "-keyout", keyFile.getAbsolutePath,
         "-out", certFile.getAbsolutePath,
         "-subj", s"/CN=$subject/O=$subject")
-      println(cmd !!)
+      (cmd !)
       Seq(keyFile, certFile)
     }
   }

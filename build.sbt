@@ -1,4 +1,5 @@
-import Certificate._
+
+enablePlugins(SelfSignedCert)
 
 lazy val akkaHttpVersion = "10.1.4"
 lazy val akkaVersion    = "2.5.15"
